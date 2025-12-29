@@ -1,18 +1,24 @@
 import streamlit as st
 import base64
+from pathlib import Path
 
+# ---------------------------
+# Page Config (ONLY ONCE)
+# ---------------------------
 st.set_page_config(
     page_title="Crime Analytics Platform",
     layout="wide"
 )
 
 # ---------------------------
-# Load background image
+# Load background image (CLOUD SAFE)
 # ---------------------------
 def get_base64_image(image_path):
+    image_path = Path(image_path)
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
+# Relative path (IMPORTANT for cloud)
 bg_image = get_base64_image("Assets/police_patrol.jpg")
 
 # ---------------------------
@@ -29,14 +35,15 @@ st.markdown(
         background-attachment: fixed;
     }}
 
-    /* Overlay for readability */
+    /* Dark overlay for readability */
     .block-container {{
         background-color: rgba(0, 0, 0, 0.55);
         padding: 2rem;
         border-radius: 12px;
     }}
 
-    h1, h2, h3, p, li {{
+    /* All text white */
+    h1, h2, h3, h4, h5, h6, p, li, span {{
         color: #ffffff !important;
     }}
     </style>
@@ -59,4 +66,3 @@ st.markdown("""
 """)
 
 st.success("🔐 Data-driven policing for smarter crime prevention")
-
