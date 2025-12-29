@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import base64
-
+import os, shutil
 st.set_page_config(
     page_title="Crime Data Overview",
     layout="wide"
@@ -42,5 +42,6 @@ st.metric("Locations", df["Location Description"].nunique())
 
 st.subheader("Sample Crime Records")
 st.dataframe(df.head())
+
 
 
