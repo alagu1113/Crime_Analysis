@@ -1,23 +1,27 @@
 import streamlit as st
 import pandas as pd
 import base64
+from pathlib import Path
 
+# ---------------------------
+# Page Config
+# ---------------------------
 st.set_page_config(
     page_title="Crime Data Overview",
     layout="wide"
 )
 
 # ---------------------------
-# Load Background Image
+# Load Background Image (RELATIVE PATH)
 # ---------------------------
 def get_base64_image(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-bg_image = get_base64_image(r"C:\Users\Alagu\Police_patrol\Assets\city-view.jpeg")
+bg_image = get_base64_image("Assets/city-view.jpeg")
 
 # ---------------------------
-# Apply CSS for Background, Main Text, and Sidebar
+# Apply CSS (Background + White Text + Black Sidebar)
 # ---------------------------
 st.markdown(
     f"""
@@ -31,41 +35,36 @@ st.markdown(
         background-attachment: fixed;
     }}
 
-    /* Main container overlay for readability */
+    /* Main content overlay */
     .block-container {{
-        background-color: rgba(0, 0, 0, 0.55);
+        background-color: rgba(0, 0, 0, 0.60);
         padding: 2rem;
-        border-radius: 12px;
-        color: #ffffff;
+        border-radius: 14px;
     }}
 
-    /* Force all headers, paragraphs, lists, metric labels & numbers to white */
-    h1, h2, h3, h4, h5, h6, p, li, div, td, th {{
-        color: #ffffff !important;
-    }}
-
-    /* Streamlit metric number & label */
-    .stMetricValue {{
-        color: #ffffff !important;
-    }}
-    .stMetricLabel {{
+    /* Force all text white */
+    h1, h2, h3, h4, h5, h6, p, span, label, li, div {{
         color: #ffffff !important;
     }}
 
-    /* Streamlit table header & body */
-    .css-1lcbmhc th {{
+    /* Metrics */
+    [data-testid="stMetricValue"] {{
         color: #ffffff !important;
     }}
-    .css-1lcbmhc td {{
+    [data-testid="stMetricLabel"] {{
         color: #ffffff !important;
     }}
 
-    /* ---------------- Sidebar ---------------- */
-    .css-1d391kg {{
-        background-color: #000000 !important;  /* Black sidebar */
+    /* Dataframe */
+    .stDataFrame {{
         color: #ffffff !important;
     }}
-    .css-1d391kg * {{
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {{
+        background-color: #000000;
+    }}
+    section[data-testid="stSidebar"] * {{
         color: #ffffff !important;
     }}
     </style>
@@ -74,16 +73,18 @@ st.markdown(
 )
 
 # ---------------------------
+# Load Data (RELATIVE PATH)
 # ---------------------------
-# Main Page Content
+df = pd.read_csv("data/Crimes_Record_No_Outliers.csv")
+
+# ---------------------------
+# Page Content
 # ---------------------------
 st.title("📌 Crime Data Overview")
-
-df = pd.read_csv(r"C:\Users\Alagu\Police_patrol\Crimes_Record_No_Outliers.csv")
 
 st.metric("Total Crimes", len(df))
 st.metric("Crime Types", df["Primary Type"].nunique())
 st.metric("Locations", df["Location Description"].nunique())
 
-st.subheader("Sample Crime Records")
+st.subheader("📄 Sample Crime Records")
 st.dataframe(df.head())
