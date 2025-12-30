@@ -15,7 +15,7 @@ st.title("🗺 Geographic Crime Heatmap (Balanced Sample)")
 # ---------------------------
 # Load CSV
 # ---------------------------
-df = pd.read_csv("/mount/src/crime_analysis/Crimes_Record_No_Outliers.csv")
+df = pd.read_csv("/mount/src/crime_analysis/pages/Crimes_Record_No_Outliers.csv")
 
 df.columns = df.columns.str.strip().str.lower()
 #st.write("Columns:", df.columns.tolist())
@@ -268,5 +268,6 @@ st.warning(
     📌 **This recommendation is based on spatial crime density analysis and crime frequency patterns.**
     """
 )
+
 
 
