@@ -75,10 +75,10 @@ st.title("⏱ Temporal Crime Patterns")
 df = pd.read_csv("/mount/src/crime_analysis/Data/Crimes_Record_No_Outliers.csv")
 
 
-df["Date"] = pd.to_datetime(df["Date"])
+df["date"] = pd.to_datetime(df["date"])
 
-st.subheader("Crimes by Hour")
-hourly = df.groupby("Hour").size()
+st.subheader("Crimes by hour")
+hourly = df.groupby("hour").size()
 st.line_chart(hourly)
 
 st.subheader("Crimes by Day")
@@ -90,7 +90,7 @@ import pandas as pd
 import altair as alt
 
 # Ensure Date column is datetime
-df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
 # ---------------------------
 # Crimes by Day
@@ -110,7 +110,7 @@ day_order = [
 ]
 
 daily["day"] = pd.Categorical(
-    daily["Date"],
+    daily["date"],
     categories=day_order,
     ordered=True
 )
@@ -151,5 +151,6 @@ max_day = daily.loc[daily["crime_count"].idxmax(), "day"]
 st.error(
     f"🚨 Highest crime occurs on **{max_day}** with **{max_count} incidents**"
 )
+
 
 
