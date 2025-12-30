@@ -81,10 +81,34 @@ st.title("📌 Crime Data Overview")
 
 df = pd.read_csv("/mount/src/crime_analysis/Data/Crimes_Record_No_Outliers.csv")
 
+# Normalize column names
+df.columns = df.columns.str.strip().str.lower()
+
+# ---------------------------
+# Detect Columns SAFELY
+# ---------------------------
+crime_col = None
+location_col = None
+
+for col in df.columns:
+    if "primary" in col and "type" in col:
+        crime_col = col
+    if "location" in col:
+        location_col = col
+
+if crime_col is None or location_col is None:
+    st.error("❌ Required columns not found in dataset")
+    st.write("Available columns:", df.columns.tolist())
+    st.stop()
+
+# ---------------------------
+# Page Content
+# ---------------------------
+st.title("📌 Crime Data Overview")
+
 st.metric("Total Crimes", len(df))
-st.metric("Crime Types", df["Primary Type"].nunique())
-st.metric("Locations", df["Location Description"].nunique())
+st.metric("Crime Types", df[crime_col].nunique())
+st.metric("Locations", df[location_col].nunique())
 
-st.subheader("Sample Crime Records")
+st.subheader("📄 Sample Crime Records")
 st.dataframe(df.head())
-
