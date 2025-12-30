@@ -98,7 +98,7 @@ df["date"] = pd.to_datetime(df["date"], errors="coerce")
 st.subheader("📊 Crimes by Day of Week")
 
 daily = (
-    df.groupby(df["Date"].dt.day_name())
+    df.groupby(df["date"].dt.day_name())
       .size()
       .reset_index(name="crime_count")
 )
@@ -151,6 +151,7 @@ max_day = daily.loc[daily["crime_count"].idxmax(), "day"]
 st.error(
     f"🚨 Highest crime occurs on **{max_day}** with **{max_count} incidents**"
 )
+
 
 
 
