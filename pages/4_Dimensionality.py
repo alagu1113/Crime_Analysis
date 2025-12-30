@@ -1,24 +1,23 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
+import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
 # ---------------------------
-# Page Setup
+# Streamlit Page Setup
 # ---------------------------
 st.set_page_config(layout="wide")
 st.title("📊 PCA + KMeans Crime Clustering")
 
 # ---------------------------
-# Load Data (CLOUD SAFE PATH)
+# Load Data
 # ---------------------------
-DATA_PATH = "Data/Crimes_Record_No_Outliers.csv"
-df = pd.read_csv(DATA_PATH)
+df = pd.read_csv("/mount/src/crime_analysis/Data/Crimes_Record_No_Outliers.csv")
 
-st.write("📄 Dataset shape:", df.shape)
+st.write("Dataset shape:", df.shape)
 
 # ---------------------------
 # Select Numeric Features
@@ -32,7 +31,7 @@ if X.shape[1] < 2:
 # ---------------------------
 # Sidebar Controls
 # ---------------------------
-st.sidebar.header("⚙️ Model Settings")
+st.sidebar.header("Model Settings")
 
 n_components = st.sidebar.slider(
     "PCA Components",
@@ -68,48 +67,90 @@ kmeans = KMeans(
     random_state=42,
     n_init=10
 )
-
 labels = kmeans.fit_predict(X_pca)
 
 # ---------------------------
-# PCA Scatter Plot (STREAMLIT)
+# Visualization
 # ---------------------------
 st.subheader("📈 PCA Cluster Visualization")
 
-pca_df = pd.DataFrame({
-    "PCA 1": X_pca[:, 0],
-    "PCA 2": X_pca[:, 1],
-    "Cluster": labels.astype(str)
-})
-
-st.scatter_chart(
-    pca_df,
-    x="PCA 1",
-    y="PCA 2",
-    color="Cluster"
+fig, ax = plt.subplots(figsize=(8, 6))
+scatter = ax.scatter(
+    X_pca[:, 0],
+    X_pca[:, 1],
+    c=labels,
+    alpha=0.7
 )
+
+ax.set_xlabel("PCA Component 1")
+ax.set_ylabel("PCA Component 2")
+ax.set_title("Crime Clusters (PCA Space)")
+
+st.pyplot(fig)
 
 # ---------------------------
 # Explained Variance
 # ---------------------------
-st.subheader("📊 PCA Explained Variance Ratio")
+st.subheader("📊 PCA Explained Variance")
 
-explained_variance = pd.DataFrame({
-    "Component": [f"PC{i+1}" for i in range(len(pca.explained_variance_ratio_))],
-    "Variance Ratio": pca.explained_variance_ratio_
-})
-
-st.bar_chart(explained_variance.set_index("Component"))
+explained_variance = pca.explained_variance_ratio_
+st.bar_chart(explained_variance)
 
 # ---------------------------
-# Cluster Size Summary
+# Cluster Summary
 # ---------------------------
-st.subheader("📌 Crime Count per Cluster")
+st.subheader("📌 Cluster Sizes")
 
 cluster_counts = pd.Series(labels).value_counts().sort_index()
-cluster_df = pd.DataFrame({
-    "Cluster": cluster_counts.index.astype(str),
-    "Crimes": cluster_counts.values
-})
+st.write(cluster_counts)
+#
+import numpy as np
 
-st.bar_chart(cluster_df.set_index("Cluster"))
+st.subheader("📈 PCA Cluster Visualization")
+
+fig, ax = plt.subplots(figsize=(8, 6))
+
+unique_labels = np.unique(labels)
+
+for label in unique_labels:
+    ax.scatter(
+        X_pca[labels == label, 0],
+        X_pca[labels == label, 1],
+        label=f"Cluster {label}",
+        alpha=0.7
+    )
+
+ax.set_xlabel("PCA Component 1")
+ax.set_ylabel("PCA Component 2")
+ax.set_title("Crime Clusters in PCA Space")
+ax.legend(title="Clusters")
+
+st.pyplot(fig)
+
+st.subheader("📊 Crime Count per Cluster")
+
+cluster_counts = pd.Series(labels).value_counts().sort_index()
+
+fig2, ax2 = plt.subplots(figsize=(6, 4))
+
+bars = ax2.bar(
+    cluster_counts.index.astype(str),
+    cluster_counts.values
+)
+
+ax2.set_xlabel("Cluster Label")
+ax2.set_ylabel("Number of Crimes")
+ax2.set_title("Crime Distribution Across Clusters")
+
+# Add value labels on bars
+for bar in bars:
+    height = bar.get_height()
+    ax2.text(
+        bar.get_x() + bar.get_width() / 2,
+        height,
+        int(height),
+        ha="center",
+        va="bottom"
+    )
+
+st.pyplot(fig2)
