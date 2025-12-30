@@ -15,7 +15,7 @@ st.title("📊 PCA + KMeans Crime Clustering")
 # ---------------------------
 # Load Data
 # ---------------------------
-df = pd.read_csv(r"C:\Users\Alagu\Police_patrol/Crimes_Record_No_Outliers.csv")
+df = pd.read_csv("/mount/src/crime_analysis/Data/Crimes_Record_No_Outliers.csv")
 
 st.write("Dataset shape:", df.shape)
 
@@ -154,4 +154,5 @@ for bar in bars:
     )
 
 st.pyplot(fig2)
+
 
