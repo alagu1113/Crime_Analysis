@@ -5,4 +5,5 @@ matplotlib
 pydeck
 altair
 scikit-learn
+matplotlib.pyplot
 umap-learn
