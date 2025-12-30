@@ -65,14 +65,14 @@ def set_crime_pattern_background(image_path):
 st.set_page_config(layout="wide")
 
 set_crime_pattern_background(
-    r"C:\Users\Alagu\Police_patrol\Assets\temp-patrol.jpg"
+    "/mount/src/crime_analysis/Assets/temp-patrol.jpg"
 )
 
 #st.title("⏱ Crime Pattern & Temporal Analysis")
 
 st.title("⏱ Temporal Crime Patterns")
 
-df = pd.read_csv(r"C:\Users\Alagu\Police_patrol/Crimes_Record_No_Outliers.csv")
+df = pd.read_csv("/mount/src/crime_analysis/Data/Crimes_Record_No_Outliers.csv")
 
 
 df["Date"] = pd.to_datetime(df["Date"])
@@ -151,4 +151,5 @@ max_day = daily.loc[daily["crime_count"].idxmax(), "day"]
 st.error(
     f"🚨 Highest crime occurs on **{max_day}** with **{max_count} incidents**"
 )
+
 
