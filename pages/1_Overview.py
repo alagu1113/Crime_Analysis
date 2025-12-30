@@ -14,7 +14,7 @@ def get_base64_image(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-bg_image = get_base64_image(r"C:\Users\Alagu\Police_patrol\Assets\city-view.jpeg")
+bg_image = get_base64_image("https://github.com/alagu1113/Crime_Analysis/tree/main/Assets/city-view.jpeg")
 
 # ---------------------------
 # Apply CSS for Background, Main Text, and Sidebar
@@ -79,7 +79,7 @@ st.markdown(
 # ---------------------------
 st.title("📌 Crime Data Overview")
 
-df = pd.read_csv(r"C:\Users\Alagu\Police_patrol\Crimes_Record_No_Outliers.csv")
+df = pd.read_csv("https://github.com/alagu1113/Crime_Analysis/tree/main/Data/Crimes_Record_No_Outliers.csv")
 
 st.metric("Total Crimes", len(df))
 st.metric("Crime Types", df["Primary Type"].nunique())
