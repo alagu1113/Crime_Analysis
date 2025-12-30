@@ -82,7 +82,7 @@ hourly = df.groupby("hour").size()
 st.line_chart(hourly)
 
 st.subheader("Crimes by Day")
-daily = df.groupby(df["Date"].dt.day_name()).size()
+daily = df.groupby(df["date"].dt.day_name()).size()
 st.bar_chart(daily)
 
 import streamlit as st
@@ -151,6 +151,7 @@ max_day = daily.loc[daily["crime_count"].idxmax(), "day"]
 st.error(
     f"🚨 Highest crime occurs on **{max_day}** with **{max_count} incidents**"
 )
+
 
 
 
