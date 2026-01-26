@@ -6,13 +6,14 @@ import numpy as np
 # Page Setup
 # ---------------------------
 st.set_page_config(layout="wide")
-st.title("📊 PCA + KMeans Crime Clustering (No sklearn)")
+st.title("📊 PCA + KMeans Crime Clustering (No sklearn) + Crime Type Analysis")
 
 # ---------------------------
 # Load Data
 # ---------------------------
 df = pd.read_csv("Data/Crimes_Record_No_Outliers.csv")
 st.write("Dataset shape:", df.shape)
+st.dataframe(df.head())
 
 # ---------------------------
 # Select Numeric Features
@@ -86,6 +87,11 @@ def kmeans(X, k, max_iters=100):
 labels, centroids = kmeans(X_pca, n_clusters)
 
 # ---------------------------
+# Attach Cluster Labels to Data
+# ---------------------------
+df["Cluster"] = labels
+
+# ---------------------------
 # PCA Scatter Plot
 # ---------------------------
 st.subheader("📈 PCA Cluster Visualization")
@@ -128,3 +134,77 @@ cluster_counts = (
 )
 
 st.dataframe(cluster_counts)
+
+# ======================================================
+# 🔎 CRIME TYPE ANALYSIS USING "Primary Type"
+# ======================================================
+
+st.header("🔎 Crime Type Analysis by Cluster (Primary Type)")
+
+crime_column = "Primary Type"   # ✅ Your column name
+
+if crime_column not in df.columns:
+    st.error(f"❌ Column '{crime_column}' not found in dataset.")
+else:
+
+    # ---------------------------
+    # 1. Crime Type Count in Each Cluster (Pivot Table)
+    # ---------------------------
+    st.subheader("📊 Number of Each Crime Type in Every Cluster")
+
+    crime_cluster_table = pd.pivot_table(
+        df,
+        index="Cluster",
+        columns=crime_column,
+        aggfunc="size",
+        fill_value=0
+    )
+
+    st.dataframe(crime_cluster_table)
+
+    # ---------------------------
+    # 2. Interactive Crime Type Distribution per Cluster
+    # ---------------------------
+    st.subheader("📈 Crime Type Distribution in Selected Cluster")
+
+    selected_cluster = st.selectbox(
+        "Select Cluster",
+        options=sorted(df["Cluster"].unique())
+    )
+
+    cluster_data = df[df["Cluster"] == selected_cluster]
+
+    crime_counts = cluster_data[crime_column].value_counts()
+
+    st.write(f"Crime type distribution in Cluster {selected_cluster}")
+    st.dataframe(crime_counts.rename("Crime Count"))
+
+    st.bar_chart(crime_counts)
+
+    # ---------------------------
+    # 3. Number of Different Crime Types in Each Cluster
+    # ---------------------------
+    st.subheader("📋 Number of Different Crime Types in Each Cluster")
+
+    crime_type_counts = (
+        df.groupby("Cluster")[crime_column]
+        .nunique()
+        .rename("Number of Crime Types")
+    )
+
+    st.dataframe(crime_type_counts)
+    st.bar_chart(crime_type_counts)
+
+# ---------------------------
+# Download Clustered Dataset
+# ---------------------------
+st.subheader("⬇️ Download Clustered Crime Dataset")
+
+csv = df.to_csv(index=False).encode("utf-8")
+
+st.download_button(
+    label="Download Clustered Dataset",
+    data=csv,
+    file_name="crime_clusters.csv",
+    mime="text/csv"
+)
