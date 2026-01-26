@@ -139,9 +139,12 @@ st.dataframe(cluster_counts)
 # 🔎 CRIME TYPE ANALYSIS USING "Primary Type"
 # ======================================================
 
-st.header("🔎 Crime Type Analysis by Cluster (Primary Type)")
+# ---------------------------
+# Crime Type Analysis (USING "Primary Type")
+# ---------------------------
+st.header("🔎 Crime Type Analysis by Cluster")
 
-crime_column = "Primary Type"   # ✅ Your column name
+crime_column = "Primary Type"   # ✅ Correct column name
 
 if crime_column not in df.columns:
     st.error(f"❌ Column '{crime_column}' not found in dataset.")
@@ -150,7 +153,7 @@ else:
     # ---------------------------
     # 1. Crime Type Count in Each Cluster (Pivot Table)
     # ---------------------------
-    st.subheader("📊 Number of Each Crime Type in Every Cluster")
+    st.subheader("📊 Crime Type Count in Each Cluster")
 
     crime_cluster_table = pd.pivot_table(
         df,
@@ -165,7 +168,7 @@ else:
     # ---------------------------
     # 2. Interactive Crime Type Distribution per Cluster
     # ---------------------------
-    st.subheader("📈 Crime Type Distribution in Selected Cluster")
+    st.subheader("📈 Crime Type Distribution by Selected Cluster")
 
     selected_cluster = st.selectbox(
         "Select Cluster",
