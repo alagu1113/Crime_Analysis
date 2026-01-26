@@ -144,7 +144,7 @@ st.dataframe(cluster_counts)
 # ---------------------------
 st.header("🔎 Crime Type Analysis by Cluster")
 
-crime_column = "Primary Type"   # ✅ Correct column name
+crime_column = "primary type"   # ✅ Correct column name
 
 if crime_column not in df.columns:
     st.error(f"❌ Column '{crime_column}' not found in dataset.")
@@ -211,3 +211,4 @@ st.download_button(
     file_name="crime_clusters.csv",
     mime="text/csv"
 )
+
