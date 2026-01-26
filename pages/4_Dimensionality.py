@@ -2,15 +2,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
-
 # ---------------------------
 # Page Setup
 # ---------------------------
 st.set_page_config(layout="wide")
-st.title("📊 PCA + KMeans Crime Clustering")
+st.title("📊 PCA + KMeans Crime Clustering (No sklearn)")
 
 # ---------------------------
 # Load Data
@@ -26,6 +22,8 @@ X = df.select_dtypes(include="number")
 if X.shape[1] < 2:
     st.error("❌ Not enough numeric features for PCA")
     st.stop()
+
+X = X.values
 
 # ---------------------------
 # Sidebar Controls
@@ -47,29 +45,48 @@ n_clusters = st.sidebar.slider(
 )
 
 # ---------------------------
-# Scaling
+# Standard Scaling (Manual)
 # ---------------------------
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+mean = X.mean(axis=0)
+std = X.std(axis=0)
+X_scaled = (X - mean) / std
 
 # ---------------------------
-# PCA
+# PCA using SVD (No sklearn)
 # ---------------------------
-pca = PCA(n_components=n_components, random_state=42)
-X_pca = pca.fit_transform(X_scaled)
+U, S, Vt = np.linalg.svd(X_scaled, full_matrices=False)
+X_pca = np.dot(X_scaled, Vt.T[:, :n_components])
+
+explained_variance_ratio = (S**2) / np.sum(S**2)
+explained_variance_ratio = explained_variance_ratio[:n_components]
 
 # ---------------------------
-# KMeans
+# Simple KMeans (Manual)
 # ---------------------------
-kmeans = KMeans(
-    n_clusters=n_clusters,
-    random_state=42,
-    n_init=10
-)
-labels = kmeans.fit_predict(X_pca)
+def kmeans(X, k, max_iters=100):
+    np.random.seed(42)
+    centroids = X[np.random.choice(len(X), k, replace=False)]
+
+    for _ in range(max_iters):
+        distances = np.linalg.norm(X[:, None] - centroids, axis=2)
+        labels = np.argmin(distances, axis=1)
+
+        new_centroids = np.array([
+            X[labels == i].mean(axis=0) if np.any(labels == i) else centroids[i]
+            for i in range(k)
+        ])
+
+        if np.allclose(centroids, new_centroids):
+            break
+
+        centroids = new_centroids
+
+    return labels, centroids
+
+labels, centroids = kmeans(X_pca, n_clusters)
 
 # ---------------------------
-# PCA Scatter (Streamlit Native)
+# PCA Scatter Plot
 # ---------------------------
 st.subheader("📈 PCA Cluster Visualization")
 
@@ -92,8 +109,8 @@ st.scatter_chart(
 st.subheader("📊 PCA Explained Variance")
 
 explained_df = pd.DataFrame({
-    "Component": [f"PC{i+1}" for i in range(len(pca.explained_variance_ratio_))],
-    "Variance": pca.explained_variance_ratio_
+    "Component": [f"PC{i+1}" for i in range(len(explained_variance_ratio))],
+    "Variance": explained_variance_ratio
 })
 
 st.bar_chart(explained_df.set_index("Component"))
